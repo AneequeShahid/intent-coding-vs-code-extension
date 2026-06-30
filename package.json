@@ -1,0 +1,122 @@
+{
+  "name": "intent-coder",
+  "displayName": "Intent Coder",
+  "description": "Convert small, explicit programmer intents into correct, language-specific code at the cursor",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "intentCoder.resolveLine",
+        "title": "Intent Coder: Resolve Line"
+      },
+      {
+        "command": "intentCoder.selectionMenu",
+        "title": "Intent Coder: Selection Actions"
+      },
+      {
+        "command": "intentCoder.switchLanguage",
+        "title": "Intent Coder: Switch Language"
+      },
+      {
+        "command": "intentCoder.insertTemplate",
+        "title": "Intent Coder: Insert Template"
+      },
+      {
+        "command": "intentCoder.openTemplateEditor",
+        "title": "Intent Coder: Edit Custom Templates"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "intentCoder.resolveLine",
+        "key": "enter",
+        "when": "editorTextFocus && !editorReadonly"
+      },
+      {
+        "command": "intentCoder.selectionMenu",
+        "key": "ctrl+enter",
+        "when": "editorTextFocus && !editorReadonly && editorHasSelection"
+      },
+      {
+        "command": "intentCoder.switchLanguage",
+        "key": "ctrl+alt+l",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Intent Coder",
+      "properties": {
+        "intentCoder.triggerKey": {
+          "type": "string",
+          "enum": [
+            "enter",
+            "tab",
+            "none"
+          ],
+          "default": "enter",
+          "description": "Trigger key to resolve intent on a line."
+        },
+        "intentCoder.llmProvider": {
+          "type": "string",
+          "enum": [
+            "anthropic",
+            "openai",
+            "ollama",
+            "none"
+          ],
+          "default": "anthropic",
+          "description": "LLM provider to use for fallback suggestions."
+        },
+        "intentCoder.model": {
+          "type": "string",
+          "default": "claude-3-5-sonnet",
+          "description": "Model identifier."
+        },
+        "intentCoder.maxContextLines": {
+          "type": "integer",
+          "default": 10,
+          "description": "Lines of surrounding context sent to the LLM."
+        },
+        "intentCoder.templatesPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to user-defined template overrides."
+        },
+        "intentCoder.enableInlinePreview": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Phase 2 ghost-text preview before committing a generated snippet."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,12 @@
+.vscode/**
+.vscodeignore
+.gitignore
+.eslintrc.json
+.prettierrc
+tsconfig.json
+src/**
+test/**
+docs/**
+FOLDER_STRUCTURE.md
+README.md
+CHANGELOG.md
