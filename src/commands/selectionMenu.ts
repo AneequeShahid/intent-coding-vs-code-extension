@@ -1,7 +1,12 @@
 import * as vscode from 'vscode';
 import { replaceSelection } from '../editor/editOperations';
+import { SupportedLanguage } from '../templates/schema';
+import { ApiKeyStore } from '../secrets/apiKeyStore';
+import { AnthropicProvider } from '../llm/anthropicProvider';
 
-export function registerSelectionMenu(_context: vscode.ExtensionContext): vscode.Disposable {
+let explainChannel: vscode.OutputChannel | undefined;
+
+export function registerSelectionMenu(context: vscode.ExtensionContext): vscode.Disposable {
   return vscode.commands.registerCommand('intentCoder.selectionMenu', async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
@@ -16,7 +21,12 @@ export function registerSelectionMenu(_context: vscode.ExtensionContext): vscode
       return;
     }
 
-    const detectedLanguage = editor.document.languageId;
+    const vscodeLang = editor.document.languageId;
+    const lang = mapLanguageId(vscodeLang);
+    if (!lang) {
+      vscode.window.showWarningMessage(`Language "${vscodeLang}" is not supported.`);
+      return;
+    }
 
     const items: vscode.QuickPickItem[] = [
       {
@@ -46,26 +56,89 @@ export function registerSelectionMenu(_context: vscode.ExtensionContext): vscode
     ];
 
     const choice = await vscode.window.showQuickPick(items, {
-      placeHolder: `Selection Menu (${detectedLanguage}) - Choose an action`,
+      placeHolder: `Selection Action Menu (${lang}) - Choose an action`,
     });
 
     if (!choice) {
       return;
     }
 
-    if (choice.label === 'Explain') {
-      vscode.window.showInformationMessage(`Intent Coder Explain Stub: Selected code has length ${selectedText.length}.`);
+    const apiKeyStore = new ApiKeyStore(context.secrets);
+    const provider = new AnthropicProvider(apiKeyStore);
+
+    const isConfigured = await provider.isConfigured();
+    if (!isConfigured) {
+      vscode.window.showWarningMessage(
+        'LLM provider is not configured. Please set your Anthropic API key to run selection menu actions.'
+      );
       return;
     }
 
-    const commentedSnippet = getCommentedStub(detectedLanguage, choice.label, selectedText);
-    await replaceSelection(editor, commentedSnippet);
+    let finalAction = choice.label;
+    let targetLang = lang;
+
+    if (choice.label === 'Translate to another language') {
+      const languages: { label: string; id: SupportedLanguage }[] = [
+        { label: 'C++', id: 'cpp' },
+        { label: 'Python', id: 'python' },
+        { label: 'Java', id: 'java' },
+        { label: 'Rust', id: 'rust' },
+        { label: 'JavaScript', id: 'javascript' },
+        { label: 'TypeScript', id: 'typescript' },
+      ];
+      
+      const langChoice = await vscode.window.showQuickPick(languages, {
+        placeHolder: 'Select target language for translation',
+      });
+      
+      if (!langChoice) {
+        return;
+      }
+      targetLang = langChoice.id;
+      finalAction = `Translate selection from ${lang} to ${langChoice.id}`;
+    }
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `Intent Coder: Running "${choice.label}"...`,
+        cancellable: false,
+      },
+      async () => {
+        try {
+          const response = await provider.generate({
+            sourceText: selectedText,
+            language: targetLang,
+            action: finalAction,
+          });
+
+          if (choice.label === 'Explain') {
+            if (!explainChannel) {
+              explainChannel = vscode.window.createOutputChannel('Intent Coder Explanation');
+            }
+            explainChannel.clear();
+            explainChannel.appendLine(`=== CODE EXPLANATION ===\n`);
+            explainChannel.appendLine(response.code);
+            explainChannel.show();
+          } else {
+            await replaceSelection(editor, response.code);
+          }
+        } catch (err: any) {
+          vscode.window.showErrorMessage(`Action failed: ${err.message}`);
+        }
+      }
+    );
   });
 }
 
-function getCommentedStub(language: string, action: string, originalText: string): string {
-  const isCStyle = ['cpp', 'java', 'rust', 'javascript', 'typescript'].includes(language);
-  const commentPrefix = isCStyle ? '// ' : '# ';
-  
-  return `${commentPrefix}Action: ${action}\n${commentPrefix}Original language: ${language}\n\n${originalText}\n\n${commentPrefix}End Action`;
+function mapLanguageId(languageId: string): SupportedLanguage | undefined {
+  const map: Record<string, SupportedLanguage> = {
+    'cpp': 'cpp',
+    'python': 'python',
+    'java': 'java',
+    'rust': 'rust',
+    'javascript': 'javascript',
+    'typescript': 'typescript',
+  };
+  return map[languageId];
 }
