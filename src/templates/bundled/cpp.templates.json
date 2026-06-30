@@ -1,0 +1,92 @@
+[
+  {
+    "id": "fast-io-cpp",
+    "trigger": ["fast io", "fastio", "fast_io"],
+    "language": "cpp",
+    "category": "io",
+    "code": "ios_base::sync_with_stdio(false);\ncin.tie(NULL);",
+    "label": "Fast IO",
+    "description": "Disable stream synchronization for faster C++ I/O operations."
+  },
+  {
+    "id": "read-int-cpp",
+    "trigger": ["read int", "readint", "input int"],
+    "language": "cpp",
+    "category": "io",
+    "code": "int n;\ncin >> n;",
+    "label": "Read Integer",
+    "description": "Declare and read an integer variable."
+  },
+  {
+    "id": "read-array-cpp",
+    "trigger": ["read array", "readarray", "input array"],
+    "language": "cpp",
+    "category": "io",
+    "code": "int n;\ncin >> n;\nvector<int> a(n);\nfor (int i = 0; i < n; i++) {\n    cin >> a[i];\n}",
+    "label": "Read Array",
+    "description": "Read size followed by N elements into a vector."
+  },
+  {
+    "id": "for-loop-cpp",
+    "trigger": ["for loop", "loop", "for loop i"],
+    "language": "cpp",
+    "category": "loop",
+    "code": "for (int i = 0; i < n; i++) {\n    \n}",
+    "label": "For Loop",
+    "description": "Standard loop from 0 to N-1."
+  },
+  {
+    "id": "dfs-skeleton-cpp",
+    "trigger": ["dfs", "dfs skeleton", "dfs algorithm"],
+    "language": "cpp",
+    "category": "algorithm",
+    "code": "void dfs(int u, const vector<vector<int>>& adj, vector<bool>& visited) {\n    visited[u] = true;\n    for (int v : adj[u]) {\n        if (!visited[v]) {\n            dfs(v, adj, visited);\n        }\n    }\n}",
+    "label": "DFS Skeleton",
+    "description": "Depth-first search traversal boilerplate."
+  },
+  {
+    "id": "bfs-skeleton-cpp",
+    "trigger": ["bfs", "bfs skeleton", "bfs algorithm"],
+    "language": "cpp",
+    "category": "algorithm",
+    "code": "void bfs(int start, const vector<vector<int>>& adj) {\n    int n = adj.size();\n    vector<bool> visited(n, false);\n    queue<int> q;\n    visited[start] = true;\n    q.push(start);\n    while (!q.empty()) {\n        int u = q.front();\n        q.pop();\n        for (int v : adj[u]) {\n            if (!visited[v]) {\n                visited[v] = true;\n                q.push(v);\n            }\n        }\n    }\n}",
+    "label": "BFS Skeleton",
+    "description": "Breadth-first search traversal boilerplate."
+  },
+  {
+    "id": "vector-sort-cpp",
+    "trigger": ["sort vector", "sort", "vector sort"],
+    "language": "cpp",
+    "category": "sort",
+    "code": "sort(a.begin(), a.end());",
+    "label": "Vector Sort",
+    "description": "Sort a vector in ascending order."
+  },
+  {
+    "id": "binary-search-cpp",
+    "trigger": ["binary search", "binsearch"],
+    "language": "cpp",
+    "category": "search",
+    "code": "bool found = binary_search(a.begin(), a.end(), target);",
+    "label": "Binary Search",
+    "description": "Check if a target element exists in a sorted vector."
+  },
+  {
+    "id": "lower-bound-cpp",
+    "trigger": ["lower bound", "lowerbound"],
+    "language": "cpp",
+    "category": "search",
+    "code": "auto it = lower_bound(a.begin(), a.end(), val);",
+    "label": "Lower Bound",
+    "description": "Find first element >= val in a sorted vector."
+  },
+  {
+    "id": "gcd-cpp",
+    "trigger": ["gcd", "greatest common divisor"],
+    "language": "cpp",
+    "category": "math",
+    "code": "int gcd(int a, int b) {\n    return b == 0 ? a : gcd(b, a % b);\n}",
+    "label": "GCD Function",
+    "description": "Recursive Greatest Common Divisor helper."
+  }
+]
