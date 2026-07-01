@@ -12,10 +12,16 @@ export interface ExtensionSettings {
   ollamaTimeoutMs: number;
 }
 
+let testSettingsOverride: Partial<ExtensionSettings> | undefined;
+
+export function setTestSettingsOverride(override: Partial<ExtensionSettings> | undefined): void {
+  testSettingsOverride = override;
+}
+
 export function getSettings(): ExtensionSettings {
   const config = vscode.workspace.getConfiguration('intentCoder');
 
-  return {
+  const base: ExtensionSettings = {
     triggerKey: config.get<'enter' | 'tab' | 'none'>('triggerKey', 'enter'),
     llmProvider: config.get<'anthropic' | 'openai' | 'ollama' | 'none'>('llmProvider', 'anthropic'),
     model: config.get<string>('model', 'claude-3-5-sonnet'),
@@ -26,4 +32,9 @@ export function getSettings(): ExtensionSettings {
     ollamaModel: config.get<string>('ollamaModel', 'qwen2.5-coder:7b'),
     ollamaTimeoutMs: config.get<number>('ollamaTimeoutMs', 15000),
   };
+
+  if (testSettingsOverride) {
+    return { ...base, ...testSettingsOverride };
+  }
+  return base;
 }

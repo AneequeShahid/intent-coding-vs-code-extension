@@ -6,6 +6,8 @@ import { shouldTrigger } from '../parser/lineTrigger';
 import { replaceCurrentLine } from '../editor/editOperations';
 import { getActiveProvider } from '../llm/providerFactory';
 import { setStatusBarInFlight, updateStatusBar } from '../ui/statusBar';
+import { getSettings } from '../config/settings';
+import { showInlinePreview } from '../ui/inlinePreview';
 
 export function registerResolveLine(context: vscode.ExtensionContext): vscode.Disposable {
   return vscode.commands.registerCommand('intentCoder.resolveLine', async () => {
@@ -13,6 +15,16 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
     if (!editor) {
       return;
     }
+
+    const lineNum = editor.selection.active.line;
+    const commitCode = async (resolvedCode: string) => {
+      const settings = getSettings();
+      if (settings.enableInlinePreview) {
+        showInlinePreview(editor.document, lineNum, resolvedCode);
+      } else {
+        await replaceCurrentLine(editor, resolvedCode);
+      }
+    };
 
     const position = editor.selection.active;
     const line = editor.document.lineAt(position.line);
@@ -39,7 +51,7 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
       const template = matchResult.matches[0];
       const paramVal = extractParam(lineText, template);
       const code = substituteParams(template.code, paramVal, template);
-      await replaceCurrentLine(editor, code);
+      await commitCode(code);
       return;
     } else if (matchResult.status === 'ambiguous') {
       const items = matchResult.matches.map((t) => ({
@@ -54,7 +66,7 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
         const template = choice.template;
         const paramVal = extractParam(lineText, template);
         const code = substituteParams(template.code, paramVal, template);
-        await replaceCurrentLine(editor, code);
+        await commitCode(code);
       }
       return;
     }
@@ -95,7 +107,7 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
             language: lang,
             action: 'line-intent',
           });
-          await replaceCurrentLine(editor, response.code);
+          await commitCode(response.code);
         } catch (err: any) {
           vscode.window.showErrorMessage(`Generation failed: ${err.message}`);
         } finally {

@@ -64,48 +64,71 @@ export function matchIntent(
     return 3;
   };
 
-  const isMatch = (normTrigger: string): boolean => {
-    const triggerWords = normTrigger.split(' ').filter((w) => w.length > 0);
-    const M = triggerWords.length;
+  const matchedTemplates: { template: Template; distance: number }[] = [];
 
-    if (inputWords.length === M) {
-      if (normalized === normTrigger) {
-        return true;
-      }
-      if (normTrigger.includes(normalized) || normalized.includes(normTrigger)) {
-        return true;
-      }
-      const threshold = getThreshold(normTrigger);
-      if (levenshtein(normalized, normTrigger) <= threshold) {
-        return true;
-      }
-    } else if (inputWords.length > M) {
-      const prefix = inputWords.slice(0, M).join(' ');
-      if (prefix === normTrigger) {
-        return true;
-      }
-      const threshold = getThreshold(normTrigger);
-      if (levenshtein(prefix, normTrigger) <= threshold) {
-        return true;
-      }
+  const checkMatch = (template: Template) => {
+    let minTDist = Infinity;
+    for (const trigger of template.trigger) {
+      const normTrigger = normalizeInput(trigger);
+      const triggerWords = normTrigger.split(' ').filter((w) => w.length > 0);
+      const M = triggerWords.length;
 
-      const suffix = inputWords.slice(inputWords.length - M).join(' ');
-      if (suffix === normTrigger) {
-        return true;
-      }
-      const suffixThreshold = getThreshold(normTrigger);
-      if (levenshtein(suffix, normTrigger) <= suffixThreshold) {
-        return true;
+      if (inputWords.length === M) {
+        if (normalized === normTrigger) {
+          minTDist = Math.min(minTDist, 0);
+        } else if (normTrigger.includes(normalized) || normalized.includes(normTrigger)) {
+          minTDist = Math.min(minTDist, 0.5);
+        } else {
+          const threshold = getThreshold(normTrigger);
+          const dist = levenshtein(normalized, normTrigger);
+          if (dist <= threshold) {
+            minTDist = Math.min(minTDist, dist);
+          }
+        }
+      } else if (inputWords.length > M) {
+        const prefix = inputWords.slice(0, M).join(' ');
+        if (prefix === normTrigger) {
+          minTDist = Math.min(minTDist, 0.1);
+        } else {
+          const threshold = getThreshold(normTrigger);
+          const dist = levenshtein(prefix, normTrigger);
+          if (dist <= threshold) {
+            minTDist = Math.min(minTDist, dist);
+          }
+        }
+
+        const suffix = inputWords.slice(inputWords.length - M).join(' ');
+        if (suffix === normTrigger) {
+          minTDist = Math.min(minTDist, 0.1);
+        } else {
+          const suffixThreshold = getThreshold(normTrigger);
+          const dist = levenshtein(suffix, normTrigger);
+          if (dist <= suffixThreshold) {
+            minTDist = Math.min(minTDist, dist);
+          }
+        }
       }
     }
-    return false;
+
+    if (minTDist !== Infinity) {
+      matchedTemplates.push({ template, distance: minTDist });
+    }
   };
 
-  const matches = templatesForLang.filter((template) =>
-    template.trigger.some((trigger) => isMatch(normalizeInput(trigger)))
-  );
+  for (const template of templatesForLang) {
+    checkMatch(template);
+  }
 
-  return buildMatchResult(matches);
+  if (matchedTemplates.length === 0) {
+    return { status: 'none', matches: [] };
+  }
+
+  const minOverallDist = Math.min(...matchedTemplates.map((m) => m.distance));
+  const bestMatches = matchedTemplates
+    .filter((m) => m.distance === minOverallDist)
+    .map((m) => m.template);
+
+  return buildMatchResult(bestMatches);
 }
 
 function buildMatchResult(matches: Template[]): MatchResult {
