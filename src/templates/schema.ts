@@ -53,7 +53,9 @@ export interface TemplateIndex {
 
 /** Runtime validator — call on every loaded template before indexing. */
 export function isValidTemplate(t: unknown): t is Template {
-  if (typeof t !== "object" || t === null) return false;
+  if (typeof t !== "object" || t === null) {
+    return false;
+  }
   const obj = t as Record<string, unknown>;
   return (
     typeof obj.id === "string" &&

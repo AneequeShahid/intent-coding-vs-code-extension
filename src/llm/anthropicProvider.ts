@@ -67,6 +67,7 @@ export class AnthropicProvider implements LLMProvider {
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 seconds timeout
 
     try {
+      /* eslint-disable @typescript-eslint/naming-convention */
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -87,6 +88,7 @@ export class AnthropicProvider implements LLMProvider {
         }),
         signal: controller.signal,
       });
+      /* eslint-enable @typescript-eslint/naming-convention */
 
       clearTimeout(timeoutId);
 
