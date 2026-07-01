@@ -44,6 +44,17 @@ API Keys are stored securely using VS Code's `SecretStorage`. The extension work
 
 ---
 
+## Offline Mode (Ollama)
+
+Intent Coder works fully offline with no API key using [Ollama](https://ollama.com).
+
+1. Install Ollama: https://ollama.com/download
+2. Pull a coding model: `ollama pull qwen2.5-coder:7b`
+3. In VS Code settings, set `intentCoder.llmProvider` to `ollama`
+4. The status bar will show `$(circuit-board) Intent Coder (local)` when Ollama is running
+
+---
+
 ## Developer Guide
 
 ### Scaffolding and Building
