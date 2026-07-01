@@ -10,3 +10,8 @@ docs/**
 FOLDER_STRUCTURE.md
 README.md
 CHANGELOG.md
+package-lock.json
+.vscode-test/**
+out/test/**
+**/*.map
+
