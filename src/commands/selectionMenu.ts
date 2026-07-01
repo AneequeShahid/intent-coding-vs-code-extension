@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import { replaceSelection } from '../editor/editOperations';
 import { SupportedLanguage } from '../templates/schema';
-import { ApiKeyStore } from '../secrets/apiKeyStore';
-import { AnthropicProvider } from '../llm/anthropicProvider';
+import { getActiveProvider } from '../llm/providerFactory';
 import { setStatusBarInFlight, updateStatusBar } from '../ui/statusBar';
 
 let explainChannel: vscode.OutputChannel | undefined;
@@ -64,14 +63,23 @@ export function registerSelectionMenu(context: vscode.ExtensionContext): vscode.
       return;
     }
 
-    const apiKeyStore = new ApiKeyStore(context.secrets);
-    const provider = new AnthropicProvider(apiKeyStore);
+    const provider = getActiveProvider(context);
+    if (!provider) {
+      vscode.window.showWarningMessage('No LLM provider configured.');
+      return;
+    }
 
     const isConfigured = await provider.isConfigured();
     if (!isConfigured) {
-      vscode.window.showWarningMessage(
-        'LLM provider is not configured. Please set your Anthropic API key to run selection menu actions.'
-      );
+      if (provider.id === 'anthropic') {
+        vscode.window.showWarningMessage(
+          'Anthropic API key is not configured. Please set your Anthropic API key to run selection menu actions.'
+        );
+      } else if (provider.id === 'ollama') {
+        vscode.window.showWarningMessage(
+          'Ollama server is not running or unreachable.'
+        );
+      }
       return;
     }
 
