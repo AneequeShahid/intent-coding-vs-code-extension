@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { loadTemplates } from '../templates';
 import { SupportedLanguage } from '../templates/schema';
-import { matchIntent } from '../parser/matcher';
+import { matchIntent, extractParam, substituteParams } from '../parser/matcher';
 import { shouldTrigger } from '../parser/lineTrigger';
 import { replaceCurrentLine } from '../editor/editOperations';
 import { getActiveProvider } from '../llm/providerFactory';
@@ -36,7 +36,9 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
     const matchResult = matchIntent(lineText, lang, index);
 
     if (matchResult.status === 'exact') {
-      const code = matchResult.matches[0].code;
+      const template = matchResult.matches[0];
+      const paramVal = extractParam(lineText, template);
+      const code = substituteParams(template.code, paramVal, template);
       await replaceCurrentLine(editor, code);
       return;
     } else if (matchResult.status === 'ambiguous') {
@@ -49,7 +51,10 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
         placeHolder: 'Ambiguous intent - Select a template to resolve',
       });
       if (choice) {
-        await replaceCurrentLine(editor, choice.template.code);
+        const template = choice.template;
+        const paramVal = extractParam(lineText, template);
+        const code = substituteParams(template.code, paramVal, template);
+        await replaceCurrentLine(editor, code);
       }
       return;
     }

@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as path from 'path';
-import { matchIntent } from '../../src/parser/matcher';
+import { matchIntent, extractParam, substituteParams } from '../../src/parser/matcher';
 import { loadTemplates } from '../../src/templates/index';
 
 describe('Matcher & Multi-Language Loader Tests', () => {
@@ -71,5 +71,32 @@ describe('Matcher & Multi-Language Loader Tests', () => {
     const resCpp = matchIntent('dfs', 'cpp', index);
     assert.strictEqual(resCpp.status, 'exact');
     assert.strictEqual(resCpp.matches[0].id, 'dfs-skeleton-cpp');
+  });
+
+  it('should extract parameter correctly from prefix and suffix match triggers', () => {
+    const cppReadArray = index.byId.get('read-array-cpp')!;
+    assert.ok(cppReadArray);
+
+    const param1 = extractParam('read array my_vector', cppReadArray);
+    assert.strictEqual(param1, 'my_vector');
+
+    const param2 = extractParam('read arry items', cppReadArray);
+    assert.strictEqual(param2, 'items');
+
+    const param3 = extractParam('my_arr read array', cppReadArray);
+    assert.strictEqual(param3, 'my_arr');
+  });
+
+  it('should substitute placeholders in template code', () => {
+    const cppReadArray = index.byId.get('read-array-cpp')!;
+    assert.ok(cppReadArray);
+
+    const codeWithVal = substituteParams(cppReadArray.code, 'items', cppReadArray);
+    assert.ok(codeWithVal.includes('vector<int> items(n);'));
+    assert.ok(codeWithVal.includes('cin >> items[i];'));
+
+    const codeWithDefault = substituteParams(cppReadArray.code, undefined, cppReadArray);
+    assert.ok(codeWithDefault.includes('vector<int> a(n);'));
+    assert.ok(codeWithDefault.includes('cin >> a[i];'));
   });
 });
