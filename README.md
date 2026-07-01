@@ -2,7 +2,6 @@
 
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/AneequeShahid.intent-coder?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=AneequeShahid.intent-coder)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/AneequeShahid.intent-coder)](https://marketplace.visualstudio.com/items?itemName=AneequeShahid.intent-coder)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > Type what you want. Press `Alt+Enter`. Get code. No AI agent. No multi-file edits. Just: **intent → snippet**, one line at a time.
 
