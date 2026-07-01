@@ -3,6 +3,7 @@ import { replaceSelection } from '../editor/editOperations';
 import { SupportedLanguage } from '../templates/schema';
 import { ApiKeyStore } from '../secrets/apiKeyStore';
 import { AnthropicProvider } from '../llm/anthropicProvider';
+import { setStatusBarInFlight, updateStatusBar } from '../ui/statusBar';
 
 let explainChannel: vscode.OutputChannel | undefined;
 
@@ -98,6 +99,7 @@ export function registerSelectionMenu(context: vscode.ExtensionContext): vscode.
       finalAction = `Translate selection from ${lang} to ${langChoice.id}`;
     }
 
+    setStatusBarInFlight();
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
@@ -125,6 +127,8 @@ export function registerSelectionMenu(context: vscode.ExtensionContext): vscode.
           }
         } catch (err: any) {
           vscode.window.showErrorMessage(`Action failed: ${err.message}`);
+        } finally {
+          await updateStatusBar(context.secrets);
         }
       }
     );

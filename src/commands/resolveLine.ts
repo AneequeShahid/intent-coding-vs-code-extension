@@ -6,6 +6,7 @@ import { shouldTrigger } from '../parser/lineTrigger';
 import { replaceCurrentLine } from '../editor/editOperations';
 import { ApiKeyStore } from '../secrets/apiKeyStore';
 import { AnthropicProvider } from '../llm/anthropicProvider';
+import { setStatusBarInFlight, updateStatusBar } from '../ui/statusBar';
 
 export function registerResolveLine(context: vscode.ExtensionContext): vscode.Disposable {
   return vscode.commands.registerCommand('intentCoder.resolveLine', async () => {
@@ -65,6 +66,7 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
       return;
     }
 
+    setStatusBarInFlight();
     await vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
@@ -81,6 +83,8 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
           await replaceCurrentLine(editor, response.code);
         } catch (err: any) {
           vscode.window.showErrorMessage(`Generation failed: ${err.message}`);
+        } finally {
+          await updateStatusBar(context.secrets);
         }
       }
     );
