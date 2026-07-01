@@ -13,6 +13,7 @@ interface PendingPreview {
 }
 
 let pendingPreview: PendingPreview | undefined;
+let extensionPath: string | undefined;
 
 function mapLanguageId(languageId: string): SupportedLanguage | undefined {
   const map: Record<string, SupportedLanguage> = {
@@ -72,7 +73,6 @@ export class IntentCoderInlineCompletionProvider implements vscode.InlineComplet
       return undefined;
     }
 
-    const extensionPath = vscode.extensions.getExtension('AneequeShahid.intent-coder')?.extensionPath;
     if (!extensionPath) {
       return undefined;
     }
@@ -117,6 +117,7 @@ export function clearInlinePreview(): void {
 }
 
 export function activateInlinePreview(context: vscode.ExtensionContext): void {
+  extensionPath = context.extensionPath;
   const provider = new IntentCoderInlineCompletionProvider();
   context.subscriptions.push(
     vscode.languages.registerInlineCompletionItemProvider(
