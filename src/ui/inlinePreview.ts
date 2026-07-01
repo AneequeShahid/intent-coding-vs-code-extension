@@ -119,12 +119,15 @@ export function clearInlinePreview(): void {
 export function activateInlinePreview(context: vscode.ExtensionContext): void {
   extensionPath = context.extensionPath;
   const provider = new IntentCoderInlineCompletionProvider();
-  context.subscriptions.push(
-    vscode.languages.registerInlineCompletionItemProvider(
-      { pattern: '**' },
-      provider
-    )
-  );
+  const supportedLanguages = ['cpp', 'python', 'java', 'rust', 'javascript', 'typescript'];
+  for (const lang of supportedLanguages) {
+    context.subscriptions.push(
+      vscode.languages.registerInlineCompletionItemProvider(
+        { language: lang },
+        provider
+      )
+    );
+  }
 
   context.subscriptions.push(
     vscode.commands.registerCommand('intentCoder.cleanInlinePrefix', async (uri: vscode.Uri, lineNum: number, length: number) => {
