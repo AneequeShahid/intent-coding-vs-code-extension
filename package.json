@@ -8,7 +8,7 @@
     "url": "https://github.com/AneequeShahid/intent-coding-vs-code-extension.git"
   },
   "description": "Convert small, explicit programmer intents into correct, language-specific code at the cursor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.85.0"
   },
