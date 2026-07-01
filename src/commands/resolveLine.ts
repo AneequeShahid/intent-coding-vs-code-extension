@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { loadTemplates } from '../templates';
 import { SupportedLanguage } from '../templates/schema';
 import { matchIntent } from '../parser/matcher';
+import { shouldTrigger } from '../parser/lineTrigger';
+import { replaceCurrentLine } from '../editor/editOperations';
 import { ApiKeyStore } from '../secrets/apiKeyStore';
 import { AnthropicProvider } from '../llm/anthropicProvider';
 
@@ -9,7 +11,17 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
   return vscode.commands.registerCommand('intentCoder.resolveLine', async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      vscode.window.showErrorMessage('No active text editor found.');
+      return;
+    }
+
+    const position = editor.selection.active;
+    const line = editor.document.lineAt(position.line);
+    const lineText = line.text;
+
+    if (!shouldTrigger(lineText)) {
+      await editor.edit((editBuilder) => {
+        editBuilder.insert(position, '\n');
+      });
       return;
     }
 
@@ -20,20 +32,12 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
       return;
     }
 
-    const position = editor.selection.active;
-    const line = editor.document.lineAt(position.line);
-    const lineText = line.text;
-
-    if (!lineText.trim()) {
-      return;
-    }
-
     const index = loadTemplates(context.extensionPath);
     const matchResult = matchIntent(lineText, lang, index);
 
     if (matchResult.status === 'exact') {
       const code = matchResult.matches[0].code;
-      await replaceLine(editor, position.line, code);
+      await replaceCurrentLine(editor, code);
       return;
     } else if (matchResult.status === 'ambiguous') {
       const items = matchResult.matches.map((t) => ({
@@ -45,7 +49,7 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
         placeHolder: 'Ambiguous intent - Select a template to resolve',
       });
       if (choice) {
-        await replaceLine(editor, position.line, choice.template.code);
+        await replaceCurrentLine(editor, choice.template.code);
       }
       return;
     }
@@ -55,8 +59,8 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
 
     const isConfigured = await provider.isConfigured();
     if (!isConfigured) {
-      vscode.window.showWarningMessage(
-        'No matching template found, and Anthropic API Key is not configured. Please set your key.'
+      vscode.window.showInformationMessage(
+        "No API key set. Use 'Intent Coder: Set API Key' command."
       );
       return;
     }
@@ -74,20 +78,12 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
             language: lang,
             action: 'line-intent',
           });
-          await replaceLine(editor, position.line, response.code);
+          await replaceCurrentLine(editor, response.code);
         } catch (err: any) {
           vscode.window.showErrorMessage(`Generation failed: ${err.message}`);
         }
       }
     );
-  });
-}
-
-async function replaceLine(editor: vscode.TextEditor, lineNum: number, code: string): Promise<boolean> {
-  const line = editor.document.lineAt(lineNum);
-  const range = new vscode.Range(lineNum, 0, lineNum, line.text.length);
-  return editor.edit((editBuilder) => {
-    editBuilder.replace(range, code);
   });
 }
 
