@@ -8,6 +8,7 @@ import { activateStatusBar } from './ui/statusBar';
 import { activateInlinePreview } from './ui/inlinePreview';
 
 export function activate(context: vscode.ExtensionContext) {
+  vscode.window.showInformationMessage('Intent Coder activated ✓');
   console.log('Congratulations, your extension "intent-coder" is now active!');
 
   activateStatusBar(context);
