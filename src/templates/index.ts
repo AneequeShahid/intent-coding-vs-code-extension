@@ -8,7 +8,17 @@ export function loadTemplates(extensionPath?: string): TemplateIndex {
     byId: new Map(),
   };
 
+  // Resolve directory path: check candidate paths to support both src/out and unit testing outDir structures
   let bundledDir = path.join(__dirname, 'bundled');
+  
+  if (!fs.existsSync(bundledDir)) {
+    bundledDir = path.join(__dirname, '..', 'bundled');
+  }
+  
+  if (!fs.existsSync(bundledDir)) {
+    bundledDir = path.join(__dirname, '..', '..', 'templates', 'bundled');
+  }
+
   if (!fs.existsSync(bundledDir) && extensionPath) {
     bundledDir = path.join(extensionPath, 'out', 'templates', 'bundled');
   }
