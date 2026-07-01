@@ -1,0 +1,137 @@
+[
+  {
+    "id": "fast-io-java",
+    "trigger": ["fast io", "fastio", "buffered reader"],
+    "language": "java",
+    "category": "io",
+    "code": "BufferedReader br = new BufferedReader(new InputStreamReader(System.in));\nStringTokenizer st = null;\n\nString next() throws IOException {\n    while (st == null || !st.hasMoreTokens()) {\n        String line = br.readLine();\n        if (line == null) return null;\n        st = new StringTokenizer(line);\n    }\n    return st.nextToken();\n}\n\nint nextInt() throws IOException {\n    return Integer.parseInt(next());\n}",
+    "label": "Fast IO Reader",
+    "description": "Custom BufferedReader and StringTokenizer helper for fast input."
+  },
+  {
+    "id": "read-int-java",
+    "trigger": ["read int", "read integer"],
+    "language": "java",
+    "category": "io",
+    "code": "int n = sc.nextInt();",
+    "label": "Read Integer",
+    "description": "Read an integer using a Scanner instance."
+  },
+  {
+    "id": "read-array-java",
+    "trigger": ["read array"],
+    "language": "java",
+    "category": "io",
+    "code": "int n = sc.nextInt();\nint[] a = new int[n];\nfor (int i = 0; i < n; i++) {\n    a[i] = sc.nextInt();\n}",
+    "label": "Read Array",
+    "description": "Read size followed by elements into an array using Scanner."
+  },
+  {
+    "id": "sort-asc-java",
+    "trigger": ["sort", "sort ascending", "arr.sort"],
+    "language": "java",
+    "category": "sort",
+    "code": "Arrays.sort(a);",
+    "label": "Arrays Sort",
+    "description": "Sort primitive array or object array in ascending order."
+  },
+  {
+    "id": "sort-desc-java",
+    "trigger": ["sort descending"],
+    "language": "java",
+    "category": "sort",
+    "code": "Arrays.sort(a, Collections.reverseOrder());",
+    "label": "Arrays Sort Descending",
+    "description": "Sort wrapper object array in descending order."
+  },
+  {
+    "id": "binary-search-java",
+    "trigger": ["binary search"],
+    "language": "java",
+    "category": "search",
+    "code": "int index = Arrays.binarySearch(a, target);",
+    "label": "Binary Search",
+    "description": "Search index of target in sorted array using Arrays.binarySearch."
+  },
+  {
+    "id": "dfs-java",
+    "trigger": ["dfs", "depth first search"],
+    "language": "java",
+    "category": "algorithm",
+    "code": "void dfs(int u, ArrayList<ArrayList<Integer>> adj, boolean[] visited) {\n    visited[u] = true;\n    for (int v : adj.get(u)) {\n        if (!visited[v]) {\n            dfs(v, adj, visited);\n        }\n    }\n}",
+    "label": "DFS",
+    "description": "Depth-first search boilerplate using recursion."
+  },
+  {
+    "id": "bfs-java",
+    "trigger": ["bfs", "breadth first search"],
+    "language": "java",
+    "category": "algorithm",
+    "code": "void bfs(int start, ArrayList<ArrayList<Integer>> adj) {\n    int n = adj.size();\n    boolean[] visited = new boolean[n];\n    Queue<Integer> q = new LinkedList<>();\n    visited[start] = true;\n    q.add(start);\n    while (!q.isEmpty()) {\n        int u = q.poll();\n        for (int v : adj.get(u)) {\n            if (!visited[v]) {\n                visited[v] = true;\n                q.add(v);\n            }\n        }\n    }\n}",
+    "label": "BFS",
+    "description": "Breadth-first search boilerplate using Queue."
+  },
+  {
+    "id": "arraylist-java",
+    "trigger": ["arraylist", "dynamic array"],
+    "language": "java",
+    "category": "data-structure",
+    "code": "ArrayList<Integer> list = new ArrayList<>();",
+    "label": "ArrayList",
+    "description": "Initialize a dynamic ArrayList."
+  },
+  {
+    "id": "hashmap-java",
+    "trigger": ["hashmap", "frequency map", "map"],
+    "language": "java",
+    "category": "data-structure",
+    "code": "HashMap<Integer, Integer> map = new HashMap<>();\nmap.put(key, map.getOrDefault(key, 0) + 1);",
+    "label": "HashMap Frequency Map",
+    "description": "Initialize HashMap and put/increment frequency counter."
+  },
+  {
+    "id": "priority-queue-min-java",
+    "trigger": ["min heap", "priority queue"],
+    "language": "java",
+    "category": "data-structure",
+    "code": "PriorityQueue<Integer> pq = new PriorityQueue<>();",
+    "label": "Min PriorityQueue",
+    "description": "Initialize standard Min-Heap PriorityQueue."
+  },
+  {
+    "id": "priority-queue-max-java",
+    "trigger": ["max heap"],
+    "language": "java",
+    "category": "data-structure",
+    "code": "PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());",
+    "label": "Max PriorityQueue",
+    "description": "Initialize Max-Heap PriorityQueue using reverseOrder comparator."
+  },
+  {
+    "id": "pair-java",
+    "trigger": ["pair", "tuple"],
+    "language": "java",
+    "category": "data-structure",
+    "code": "static class Pair implements Comparable<Pair> {\n    int first, second;\n    Pair(int first, int second) {\n        this.first = first;\n        this.second = second;\n    }\n    @Override\n    public int compareTo(Pair other) {\n        if (this.first != other.first) return Integer.compare(this.first, other.first);\n        return Integer.compare(this.second, other.second);\n    }\n}",
+    "label": "Comparable Pair Class",
+    "description": "Static Pair helper class implementing Comparable interface."
+  },
+  {
+    "id": "mod-const-java",
+    "trigger": ["mod", "modulo constant"],
+    "language": "java",
+    "category": "misc",
+    "code": "static final int MOD = 1_000_000_007;",
+    "label": "Modulo Constant",
+    "description": "Define static final Modulo 1e9+7 constant."
+  },
+  {
+    "id": "main-class-java",
+    "trigger": ["main", "class main", "boilerplate"],
+    "language": "java",
+    "category": "misc",
+    "code": "import java.io.*;\nimport java.util.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        \n    }\n}",
+    "label": "Main Class Boilerplate",
+    "description": "Starter template for competitive programming in Java."
+  }
+]

@@ -1,0 +1,137 @@
+[
+  {
+    "id": "fast-io-python",
+    "trigger": ["fast io", "fastio"],
+    "language": "python",
+    "category": "io",
+    "code": "import sys\ninput = sys.stdin.read",
+    "label": "Fast IO",
+    "description": "Fast input reading from stdin using sys.stdin.read."
+  },
+  {
+    "id": "read-int-python",
+    "trigger": ["read int", "read integer", "read n"],
+    "language": "python",
+    "category": "io",
+    "code": "n = int(input())",
+    "label": "Read Integer",
+    "description": "Read a single integer from standard input."
+  },
+  {
+    "id": "read-array-python",
+    "trigger": ["read array", "read list"],
+    "language": "python",
+    "category": "io",
+    "code": "a = list(map(int, input().split()))",
+    "label": "Read Array",
+    "description": "Read a line of space-separated integers into a list."
+  },
+  {
+    "id": "read-matrix-python",
+    "trigger": ["read matrix", "read grid"],
+    "language": "python",
+    "category": "io",
+    "code": "r, c = map(int, input().split())\ngrid = [list(map(int, input().split())) for _ in range(r)]",
+    "label": "Read Matrix",
+    "description": "Read dimensions R and C, followed by R lines of integers into a grid."
+  },
+  {
+    "id": "sort-asc-python",
+    "trigger": ["sort", "sort ascending", "arr.sort"],
+    "language": "python",
+    "category": "sort",
+    "code": "a.sort()",
+    "label": "Sort Ascending",
+    "description": "Sort list in-place in ascending order."
+  },
+  {
+    "id": "sort-desc-python",
+    "trigger": ["sort descending", "reverse sort"],
+    "language": "python",
+    "category": "sort",
+    "code": "a.sort(reverse=True)",
+    "label": "Sort Descending",
+    "description": "Sort list in-place in descending order."
+  },
+  {
+    "id": "binary-search-python",
+    "trigger": ["binary search", "bisect"],
+    "language": "python",
+    "category": "search",
+    "code": "import bisect\nidx = bisect.bisect_left(a, target)",
+    "label": "Binary Search",
+    "description": "Binary search index of target using bisect_left."
+  },
+  {
+    "id": "dfs-python",
+    "trigger": ["dfs", "depth first search"],
+    "language": "python",
+    "category": "algorithm",
+    "code": "def dfs(u, visited, adj):\n    visited.add(u)\n    for v in adj[u]:\n        if v not in visited:\n            dfs(v, visited, adj)",
+    "label": "DFS",
+    "description": "Depth-first search boilerplate using recursion."
+  },
+  {
+    "id": "bfs-python",
+    "trigger": ["bfs", "breadth first search"],
+    "language": "python",
+    "category": "algorithm",
+    "code": "from collections import deque\n\ndef bfs(start, adj):\n    visited = {start}\n    q = deque([start])\n    while q:\n        u = q.popleft()\n        for v in adj[u]:\n            if v not in visited:\n                visited.add(v)\n                q.append(v)",
+    "label": "BFS",
+    "description": "Breadth-first search boilerplate using deque."
+  },
+  {
+    "id": "defaultdict-python",
+    "trigger": ["defaultdict", "default dict"],
+    "language": "python",
+    "category": "data-structure",
+    "code": "from collections import defaultdict\nd = defaultdict(int)",
+    "label": "Default Dictionary",
+    "description": "Initialize a defaultdict with default int values."
+  },
+  {
+    "id": "counter-python",
+    "trigger": ["counter", "frequency map"],
+    "language": "python",
+    "category": "data-structure",
+    "code": "from collections import Counter\nfreq = Counter(a)",
+    "label": "Counter",
+    "description": "Count frequencies of elements in list using Counter."
+  },
+  {
+    "id": "heap-min-python",
+    "trigger": ["min heap", "priority queue"],
+    "language": "python",
+    "category": "data-structure",
+    "code": "import heapq\nheapq.heapify(a)\nheapq.heappush(a, val)\nmin_val = heapq.heappop(a)",
+    "label": "Min Heap",
+    "description": "Min heap operations using heapq module."
+  },
+  {
+    "id": "heap-max-python",
+    "trigger": ["max heap"],
+    "language": "python",
+    "category": "data-structure",
+    "code": "import heapq\n# Python heapq is min-heap by default; negate values for max-heap\na = [-x for x in original_list]\nheapq.heapify(a)\nheapq.heappush(a, -val)\nmax_val = -heapq.heappop(a)",
+    "label": "Max Heap",
+    "description": "Max heap implementation by negating elements using heapq."
+  },
+  {
+    "id": "gcd-lcm-python",
+    "trigger": ["gcd", "lcm"],
+    "language": "python",
+    "category": "misc",
+    "code": "import math\ng = math.gcd(a, b)\nl = (a * b) // g",
+    "label": "GCD & LCM",
+    "description": "Calculate Greatest Common Divisor and Least Common Multiple."
+  },
+  {
+    "id": "mod-const-python",
+    "trigger": ["mod", "modulo constant"],
+    "language": "python",
+    "category": "misc",
+    "code": "MOD = 10**9 + 7",
+    "label": "Modulo Constant",
+    "description": "Define standard 1e9+7 modulo constant."
+  }
+]

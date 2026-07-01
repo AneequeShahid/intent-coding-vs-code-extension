@@ -1,0 +1,119 @@
+[
+  {
+    "id": "read-int-rust",
+    "trigger": ["read int", "read integer", "read n"],
+    "language": "rust",
+    "category": "io",
+    "code": "let mut input = String::new();\nstd::io::stdin().read_line(&mut input).unwrap();\nlet n: i32 = input.trim().parse().unwrap();",
+    "label": "Read Integer",
+    "description": "Read a parsed integer value from stdin."
+  },
+  {
+    "id": "read-line-rust",
+    "trigger": ["read line", "read string"],
+    "language": "rust",
+    "category": "io",
+    "code": "let mut input = String::new();\nstd::io::stdin().read_line(&mut input).unwrap();\nlet s = input.trim();",
+    "label": "Read Line String",
+    "description": "Read a line of text into a trimmed String."
+  },
+  {
+    "id": "read-array-rust",
+    "trigger": ["read array", "read vec"],
+    "language": "rust",
+    "category": "io",
+    "code": "let mut input = String::new();\nstd::io::stdin().read_line(&mut input).unwrap();\nlet a: Vec<i32> = input\n    .split_whitespace()\n    .map(|s| s.parse().unwrap())\n    .collect();",
+    "label": "Read Vector Array",
+    "description": "Read space-separated integers into a Vec."
+  },
+  {
+    "id": "sort-asc-rust",
+    "trigger": ["sort", "sort ascending", "arr.sort"],
+    "language": "rust",
+    "category": "sort",
+    "code": "a.sort();",
+    "label": "Sort Ascending",
+    "description": "Sort vector in-place in ascending order."
+  },
+  {
+    "id": "sort-desc-rust",
+    "trigger": ["sort descending", "reverse sort"],
+    "language": "rust",
+    "category": "sort",
+    "code": "a.sort_by(|x, y| y.cmp(x));",
+    "label": "Sort Descending",
+    "description": "Sort vector in-place in descending order."
+  },
+  {
+    "id": "binary-search-rust",
+    "trigger": ["binary search"],
+    "language": "rust",
+    "category": "search",
+    "code": "let found = a.binary_search(&target).is_ok();",
+    "label": "Binary Search",
+    "description": "Search if target exists in sorted vector using binary_search."
+  },
+  {
+    "id": "dfs-rust",
+    "trigger": ["dfs", "depth first search"],
+    "language": "rust",
+    "category": "algorithm",
+    "code": "fn dfs(u: usize, adj: &Vec<Vec<usize>>, visited: &mut Vec<bool>) {\n    visited[u] = true;\n    for &v in &adj[u] {\n        if !visited[v] {\n            dfs(v, adj, visited);\n        }\n    }\n}",
+    "label": "DFS",
+    "description": "Depth-first search boilerplate using recursion."
+  },
+  {
+    "id": "bfs-rust",
+    "trigger": ["bfs", "breadth first search"],
+    "language": "rust",
+    "category": "algorithm",
+    "code": "use std::collections::VecDeque;\n\nfn bfs(start: usize, adj: &Vec<Vec<usize>>) {\n    let n = adj.len();\n    let mut visited = vec![false; n];\n    let mut q = VecDeque::new();\n    visited[start] = true;\n    q.push_back(start);\n    while let Some(u) = q.pop_front() {\n        for &v in &adj[u] {\n            if !visited[v] {\n                visited[v] = true;\n                q.push_back(v);\n            }\n        }\n    }\n}",
+    "label": "BFS",
+    "description": "Breadth-first search boilerplate using VecDeque."
+  },
+  {
+    "id": "hashmap-rust",
+    "trigger": ["hashmap", "map", "frequency map"],
+    "language": "rust",
+    "category": "data-structure",
+    "code": "use std::collections::HashMap;\nlet mut map = HashMap::new();\n*map.entry(key).or_insert(0) += 1;",
+    "label": "HashMap Frequency Counter",
+    "description": "Initialize HashMap and entry increment helper."
+  },
+  {
+    "id": "vec-rust",
+    "trigger": ["vec", "vector", "dynamic array"],
+    "language": "rust",
+    "category": "data-structure",
+    "code": "let mut a = Vec::new();",
+    "label": "Vec dynamic array",
+    "description": "Initialize standard empty Vec."
+  },
+  {
+    "id": "binary-heap-rust",
+    "trigger": ["max heap", "priority queue", "binary heap"],
+    "language": "rust",
+    "category": "data-structure",
+    "code": "use std::collections::BinaryHeap;\nlet mut heap = BinaryHeap::new();\nheap.push(val);\nlet max_val = heap.pop();",
+    "label": "BinaryHeap Max-Heap",
+    "description": "Max-heap priority queue operations using std::collections::BinaryHeap."
+  },
+  {
+    "id": "mod-const-rust",
+    "trigger": ["mod", "modulo constant"],
+    "language": "rust",
+    "category": "misc",
+    "code": "const MOD: i64 = 1_000_000_007;",
+    "label": "Modulo Constant",
+    "description": "Define 1e9+7 modulo constant."
+  },
+  {
+    "id": "gcd-rust",
+    "trigger": ["gcd", "lcm"],
+    "language": "rust",
+    "category": "misc",
+    "code": "fn gcd(a: i64, b: i64) -> i64 {\n    if b == 0 { a } else { gcd(b, a % b) }\n}",
+    "label": "GCD helper",
+    "description": "Recursive Greatest Common Divisor helper function."
+  }
+]
