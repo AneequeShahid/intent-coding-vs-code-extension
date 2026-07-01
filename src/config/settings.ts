@@ -27,7 +27,7 @@ export function getSettings(): ExtensionSettings {
     model: config.get<string>('model', 'claude-3-5-sonnet'),
     maxContextLines: config.get<number>('maxContextLines', 10),
     templatesPath: config.get<string>('templatesPath', ''),
-    enableInlinePreview: config.get<boolean>('enableInlinePreview', false),
+    enableInlinePreview: config.get<boolean>('enableInlinePreview', true),
     ollamaHost: config.get<string>('ollamaHost', 'http://localhost:11434'),
     ollamaModel: config.get<string>('ollamaModel', 'qwen2.5-coder:7b'),
     ollamaTimeoutMs: config.get<number>('ollamaTimeoutMs', 15000),

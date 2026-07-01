@@ -106,7 +106,7 @@
         },
         "intentCoder.enableInlinePreview": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Enable Phase 2 ghost-text preview before committing a generated snippet."
         },
         "intentCoder.ollamaHost": {
