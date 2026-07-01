@@ -1,4 +1,9 @@
 import * as vscode from 'vscode';
+import { getSettings } from '../config/settings';
+import { loadTemplates } from '../templates';
+import { matchIntent, extractParam, substituteParams } from '../parser/matcher';
+import { shouldTrigger } from '../parser/lineTrigger';
+import { SupportedLanguage } from '../templates/schema';
 
 interface PendingPreview {
   documentUri: string;
@@ -9,6 +14,18 @@ interface PendingPreview {
 
 let pendingPreview: PendingPreview | undefined;
 
+function mapLanguageId(languageId: string): SupportedLanguage | undefined {
+  const map: Record<string, SupportedLanguage> = {
+    'cpp': 'cpp',
+    'python': 'python',
+    'java': 'java',
+    'rust': 'rust',
+    'javascript': 'javascript',
+    'typescript': 'typescript',
+  };
+  return map[languageId];
+}
+
 export class IntentCoderInlineCompletionProvider implements vscode.InlineCompletionItemProvider {
   provideInlineCompletionItems(
     document: vscode.TextDocument,
@@ -16,30 +33,72 @@ export class IntentCoderInlineCompletionProvider implements vscode.InlineComplet
     _context: vscode.InlineCompletionContext,
     _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.InlineCompletionList | vscode.InlineCompletionItem[]> {
-    if (!pendingPreview) {
+    // 1. Explicit Alt+Enter trigger preview
+    if (pendingPreview) {
+      if (
+        document.uri.toString() === pendingPreview.documentUri &&
+        position.line === pendingPreview.line
+      ) {
+        const insertPos = new vscode.Position(pendingPreview.line, pendingPreview.originalLineLength);
+        const completionItem = new vscode.InlineCompletionItem(
+          pendingPreview.code,
+          new vscode.Range(insertPos, insertPos)
+        );
+        completionItem.command = {
+          command: 'intentCoder.cleanInlinePrefix',
+          title: 'Clean Inline Prefix',
+          arguments: [document.uri, pendingPreview.line, pendingPreview.originalLineLength]
+        };
+
+        // Clear once provided
+        pendingPreview = undefined;
+        return [completionItem];
+      }
+    }
+
+    // 2. Automatic preview as-you-type (for exact template matches only)
+    const settings = getSettings();
+    if (!settings.enableInlinePreview) {
       return undefined;
     }
 
-    if (
-      document.uri.toString() !== pendingPreview.documentUri ||
-      position.line !== pendingPreview.line
-    ) {
+    const lineText = document.lineAt(position.line).text;
+    if (!shouldTrigger(lineText)) {
       return undefined;
     }
 
-    const insertPos = new vscode.Position(pendingPreview.line, pendingPreview.originalLineLength);
-    const completionItem = new vscode.InlineCompletionItem(
-      pendingPreview.code,
-      new vscode.Range(insertPos, insertPos)
-    );
+    const lang = mapLanguageId(document.languageId);
+    if (!lang) {
+      return undefined;
+    }
 
-    completionItem.command = {
-      command: 'intentCoder.cleanInlinePrefix',
-      title: 'Clean Inline Prefix',
-      arguments: [document.uri, pendingPreview.line, pendingPreview.originalLineLength]
-    };
+    const extensionPath = vscode.extensions.getExtension('AneequeShahid.intent-coder')?.extensionPath;
+    if (!extensionPath) {
+      return undefined;
+    }
 
-    return [completionItem];
+    const index = loadTemplates(extensionPath);
+    const matchResult = matchIntent(lineText, lang, index);
+
+    if (matchResult.status === 'exact') {
+      const template = matchResult.matches[0];
+      const paramVal = extractParam(lineText, template);
+      const code = substituteParams(template.code, paramVal, template);
+
+      const insertPos = new vscode.Position(position.line, lineText.length);
+      const completionItem = new vscode.InlineCompletionItem(
+        code,
+        new vscode.Range(insertPos, insertPos)
+      );
+      completionItem.command = {
+        command: 'intentCoder.cleanInlinePrefix',
+        title: 'Clean Inline Prefix',
+        arguments: [document.uri, position.line, lineText.length]
+      };
+      return [completionItem];
+    }
+
+    return undefined;
   }
 }
 
