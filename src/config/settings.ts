@@ -7,6 +7,9 @@ export interface ExtensionSettings {
   maxContextLines: number;
   templatesPath: string;
   enableInlinePreview: boolean;
+  ollamaHost: string;
+  ollamaModel: string;
+  ollamaTimeoutMs: number;
 }
 
 export function getSettings(): ExtensionSettings {
@@ -19,5 +22,8 @@ export function getSettings(): ExtensionSettings {
     maxContextLines: config.get<number>('maxContextLines', 10),
     templatesPath: config.get<string>('templatesPath', ''),
     enableInlinePreview: config.get<boolean>('enableInlinePreview', false),
+    ollamaHost: config.get<string>('ollamaHost', 'http://localhost:11434'),
+    ollamaModel: config.get<string>('ollamaModel', 'qwen2.5-coder:7b'),
+    ollamaTimeoutMs: config.get<number>('ollamaTimeoutMs', 15000),
   };
 }
