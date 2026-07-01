@@ -101,6 +101,21 @@
           "type": "boolean",
           "default": false,
           "description": "Enable Phase 2 ghost-text preview before committing a generated snippet."
+        },
+        "intentCoder.ollamaHost": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Base URL of the local Ollama server."
+        },
+        "intentCoder.ollamaModel": {
+          "type": "string",
+          "default": "qwen2.5-coder:7b",
+          "description": "Model tag to use for generation."
+        },
+        "intentCoder.ollamaTimeoutMs": {
+          "type": "integer",
+          "default": 15000,
+          "description": "Request timeout in milliseconds."
         }
       }
     }
