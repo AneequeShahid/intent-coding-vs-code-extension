@@ -4,8 +4,7 @@ import { SupportedLanguage } from '../templates/schema';
 import { matchIntent } from '../parser/matcher';
 import { shouldTrigger } from '../parser/lineTrigger';
 import { replaceCurrentLine } from '../editor/editOperations';
-import { ApiKeyStore } from '../secrets/apiKeyStore';
-import { AnthropicProvider } from '../llm/anthropicProvider';
+import { getActiveProvider } from '../llm/providerFactory';
 import { setStatusBarInFlight, updateStatusBar } from '../ui/statusBar';
 
 export function registerResolveLine(context: vscode.ExtensionContext): vscode.Disposable {
@@ -55,14 +54,25 @@ export function registerResolveLine(context: vscode.ExtensionContext): vscode.Di
       return;
     }
 
-    const apiKeyStore = new ApiKeyStore(context.secrets);
-    const provider = new AnthropicProvider(apiKeyStore);
+    const provider = getActiveProvider(context);
+    if (!provider) {
+      vscode.window.showInformationMessage(
+        "No LLM provider configured."
+      );
+      return;
+    }
 
     const isConfigured = await provider.isConfigured();
     if (!isConfigured) {
-      vscode.window.showInformationMessage(
-        "No API key set. Use 'Intent Coder: Set API Key' command."
-      );
+      if (provider.id === 'anthropic') {
+        vscode.window.showInformationMessage(
+          "No API key set. Use 'Intent Coder: Set API Key' command."
+        );
+      } else if (provider.id === 'ollama') {
+        vscode.window.showWarningMessage(
+          "Ollama server is not running or unreachable."
+        );
+      }
       return;
     }
 
