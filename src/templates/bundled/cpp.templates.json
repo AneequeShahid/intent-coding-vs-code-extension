@@ -22,7 +22,13 @@
     "trigger": ["read array", "readarray", "input array"],
     "language": "cpp",
     "category": "io",
-    "code": "int n;\ncin >> n;\nvector<int> a(n);\nfor (int i = 0; i < n; i++) {\n    cin >> a[i];\n}",
+    "code": "int n;\ncin >> n;\nvector<int> {{var}}(n);\nfor (int i = 0; i < n; i++) {\n    cin >> {{var}}[i];\n}",
+    "params": [
+      {
+        "name": "var",
+        "defaultValue": "a"
+      }
+    ],
     "label": "Read Array",
     "description": "Read size followed by N elements into a vector."
   },
