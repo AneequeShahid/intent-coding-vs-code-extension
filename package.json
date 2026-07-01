@@ -38,8 +38,8 @@
     "keybindings": [
       {
         "command": "intentCoder.resolveLine",
-        "key": "enter",
-        "when": "editorTextFocus && !editorReadonly"
+        "key": "alt+enter",
+        "when": "editorTextFocus"
       },
       {
         "command": "intentCoder.selectionMenu",
